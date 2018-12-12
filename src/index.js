@@ -1,18 +1,12 @@
 function pcPromise(promiseFn) {
   var that = this;
   let nextData;
+  this.thenfn = [];
   this.resolve = function(data) {
-    console.log("resolved", data, that.thenFn);
-    if (that.thenFn) {
-      nextData = that.thenFn(data);
-      // console.log("H1");
-      that.thenFn = null;
-      // console.log("H2");
-
-      // console.log(nextData, "next");
-      if (nextData) {
-        setTimeout(() => that.resolve(nextData));
-      }
+    let newData;
+    newData = data;
+    for (var i = 0; i < that.thenfn.length; i++) {
+      newData = that.thenfn[i](newData);
     }
   };
   this.reject = function(error) {
@@ -21,8 +15,7 @@ function pcPromise(promiseFn) {
   };
   this.promiseFn = promiseFn;
   this.then = function(thenFn) {
-    console.log("then called");
-    that.thenFn = thenFn;
+    that.thenfn.push(thenFn);
     return that;
   };
   this.catch = function(catchFn) {
@@ -33,9 +26,10 @@ function pcPromise(promiseFn) {
 }
 
 var test = new pcPromise(function(resolve, reject) {
-  // console.log("Proimise Here");
-  resolve(1);
-  reject(2);
+  setTimeout(() => {
+    resolve(1);
+  }, 2000);
+  // reject(2);
 })
   .then(data => {
     console.log(data, "then data");
@@ -44,6 +38,14 @@ var test = new pcPromise(function(resolve, reject) {
   .then(data => {
     console.log(data, "then data");
     return 3 * data;
+  })
+  .then(data => {
+    console.log(data, "then data");
+    return 4 * data;
+  })
+  .then(data => {
+    console.log(data, "then data");
+    return 4 * data;
   })
   .catch(error => {
     console.log(error, "catched error");
