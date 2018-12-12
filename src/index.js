@@ -35,7 +35,7 @@ function pcPromise(promiseFn) {
 var test = new pcPromise(function(resolve, reject) {
   // console.log("Proimise Here");
   resolve(1);
-  // reject(2);
+  reject(2);
 })
   .then(data => {
     console.log(data, "then data");
