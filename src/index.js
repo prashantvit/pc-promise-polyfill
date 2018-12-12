@@ -1,16 +1,21 @@
 function pcPromise(promiseFn) {
   var that = this;
-  let nextData;
   this.thenfn = [];
   this.resolve = function(data) {
     let newData;
     newData = data;
     for (var i = 0; i < that.thenfn.length; i++) {
       newData = that.thenfn[i](newData);
+      if (pcPromise.prototype.isPrototypeOf(newData)) {
+        let newPromise = newData;
+        for (var j = i + 1; j <= that.thenfn.length; j++) {
+          newPromise = newPromise.then(that.thenfn[j]);
+        }
+        break;
+      }
     }
   };
   this.reject = function(error) {
-    // console.log("rejected", error);
     that.catchFn(error);
   };
   this.promiseFn = promiseFn;
@@ -37,7 +42,24 @@ var test = new pcPromise(function(resolve, reject) {
   })
   .then(data => {
     console.log(data, "then data");
-    return 3 * data;
+    return 4 * data;
+  })
+  .then(data => {
+    console.log(data, "then data");
+    return new pcPromise(function(resolve, reject) {
+      setTimeout(() => {
+        resolve(10);
+      }, 2000);
+      // reject(2);
+    });
+  })
+  .then(data => {
+    console.log(data, "then data");
+    return new pcPromise(function(resolve, reject) {
+      setTimeout(() => {
+        resolve(10);
+      }, 2000);
+    });
   })
   .then(data => {
     console.log(data, "then data");
