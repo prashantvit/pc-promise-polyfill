@@ -52,4 +52,3 @@ var test = new pcPromise(function(resolve, reject) {
   });
 
 console.log(test);
-document.getElementById("app").innerHTML = JSON.stringify(test);
